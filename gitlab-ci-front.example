@@ -1,0 +1,48 @@
+stages:
+  - build
+
+build_dev:
+  stage: build
+  only:
+    - develop
+  tags:
+    - abcopilotproject
+  script:
+    - rundevgit abcopilotproject /home/gitlab-runner/builds/WLGNeH8i/0/develop/iron-backoffice-v2 $mypassword
+    - cd /home/gitlab-runner/abcopilotproject
+    - AWS_ACCESS_KEY_ID=$AWS_IAM_USER_GITLAB_ACCESSKEY AWS_SECRET_ACCESS_KEY=$AWS_IAM_USER_GITLAB_SECRETKEY aws s3 cp s3://abcopilot-project-env-lkjlkjbla/dev/env.example .env
+    - chmod -v 777 .env
+    - docker build -t abcopilot-project .
+    - docker run --rm -t -e AWS_ACCESS_KEY_ID=$AWS_IAM_USER_GITLAB_ACCESSKEY -e AWS_SECRET_ACCESS_KEY=$AWS_IAM_USER_GITLAB_SECRETKEY abcopilot-project aws s3 sync dist/ s3://abcopilot-project-khkuyj --delete
+    - AWS_ACCESS_KEY_ID=$AWS_IAM_USER_GITLAB_ACCESSKEY AWS_SECRET_ACCESS_KEY=$AWS_IAM_USER_GITLAB_SECRETKEY aws cloudfront create-invalidation --distribution-id E3P2JFIN0C9TY8 --paths "/*"
+
+build_pre:
+  stage: build
+  only:
+    - staging
+  tags:
+    - abcopilotproject
+  script:
+    - rundevgit abcopilotproject /home/gitlab-runner/builds/WLGNeH8i/0/develop/iron-backoffice-v2 $mypassword
+    - cd /home/gitlab-runner/abcopilotproject
+    - AWS_ACCESS_KEY_ID=$AWS_IAM_USER_GITLAB_ACCESSKEY AWS_SECRET_ACCESS_KEY=$AWS_IAM_USER_GITLAB_SECRETKEY aws s3 cp s3://abcopilot-project-env-lkjlkjbla/pre/env.example .env
+    - chmod -v 777 .env
+    - docker build -t abcopilot-project .
+    - docker run --rm -t -e AWS_ACCESS_KEY_ID=$AWS_IAM_USER_GITLAB_ACCESSKEY -e AWS_SECRET_ACCESS_KEY=$AWS_IAM_USER_GITLAB_SECRETKEY abcopilot-project aws s3 sync dist/ s3://abcopilot-project-pre-bdtdkt --delete
+    - AWS_ACCESS_KEY_ID=$AWS_IAM_USER_GITLAB_ACCESSKEY AWS_SECRET_ACCESS_KEY=$AWS_IAM_USER_GITLAB_SECRETKEY aws cloudfront create-invalidation --distribution-id E2MFDY6PA388UP --paths "/*"
+
+build_pro:
+  stage: build
+  only:
+    - main
+  tags:
+    - abcopilotproject
+  script:
+    - rundevgit abcopilotproject /home/gitlab-runner/builds/WLGNeH8i/0/develop/iron-backoffice-v2 $mypassword
+    - cd /home/gitlab-runner/abcopilotproject
+    - AWS_ACCESS_KEY_ID=$AWS_IAM_USER_GITLAB_ACCESSKEY AWS_SECRET_ACCESS_KEY=$AWS_IAM_USER_GITLAB_SECRETKEY aws s3 cp s3://abcopilot-project-env-lkjlkjbla/pro/env.example .env
+    - chmod -v 777 .env
+    - docker build -t abcopilot-project .
+    - docker run --rm -t -e AWS_ACCESS_KEY_ID=$AWS_IAM_USER_GITLAB_ACCESSKEY -e AWS_SECRET_ACCESS_KEY=$AWS_IAM_USER_GITLAB_SECRETKEY abcopilot-project aws s3 sync dist/ s3://abcopilot-bo-v2-gjhgvkjsd --delete
+    - AWS_ACCESS_KEY_ID=$AWS_IAM_USER_GITLAB_ACCESSKEY AWS_SECRET_ACCESS_KEY=$AWS_IAM_USER_GITLAB_SECRETKEY aws cloudfront create-invalidation --distribution-id E13R2BXXJ8RMGA --paths "/*"
+
