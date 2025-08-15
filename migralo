@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# Made by Sinfallas <sinfallas@yahoo.com>
+# Licence: GPL-2
+LC_ALL=C
+SECONDS=0
+
+clear
+if [[ -z "$1" ]]; then
+	echo "ERROR: Faltan parametros."
+fi
+
+if [[ -z "$2" ]]; then
+        echo "ERROR: Faltan parametros."
+fi
+
+echo -e "\e[00;1;92mOrigen:\e[00m"
+echo "$1"
+echo ""
+echo -e "\e[00;1;92mDestino:\e[00m"
+echo "$2"
+
+echo -e "\e[00;1;92mClonando:\e[00m"
+git clone --bare "$1"
+va=$(find . -mindepth 1 -maxdepth 1 -type d | cut -c 3-200)
+cd $va
+echo ""
+echo -e "\e[00;1;92mPush:\e[00m"
+git push --mirror "$2"
+echo ""
+echo "duracion $SECONDS segundos"
+echo "Finalizado."
